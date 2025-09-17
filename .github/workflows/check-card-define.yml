@@ -1,0 +1,30 @@
+name: Check customElements.define
+
+on:
+  push:
+    paths:
+      - "price-timeline-card.js"
+  pull_request:
+    paths:
+      - "price-timeline-card.js"
+
+jobs:
+  check-define:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Verify customElements.define
+        run: |
+          if grep -q 'customElements.define("price-timeline-card-test", PriceTimelineCard);' price-timeline-card.js; then
+            echo "❌ Found forbidden -test definition in price-timeline-card.js"
+            exit 1
+          fi
+
+          if ! grep -q 'customElements.define("price-timeline-card", PriceTimelineCard);' price-timeline-card.js; then
+            echo "❌ Missing required customElements.define(\"price-timeline-card\", PriceTimelineCard);"
+            exit 1
+          fi
+
+          echo "✅ customElements.define is correct"
