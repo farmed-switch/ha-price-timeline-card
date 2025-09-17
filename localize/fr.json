@@ -1,7 +1,0 @@
-{
-  "no_data": "Aucune donnée disponible",
-  "missing_price": "Veuillez indiquer le capteur 'price' dans la configuration",
-  "missing_average": "Veuillez indiquer le capteur 'average' dans la configuration",
-  "label_today_price": "Prix du jour",
-  "unit_cent": "Centimes"
-}
