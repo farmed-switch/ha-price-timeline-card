@@ -1,0 +1,16 @@
+{
+  "name": "price-timeline-card",
+  "version": "1.0.0",
+  "description": "Custom card for Home Assistant",
+  "type": "module",
+  "scripts": {
+    "build": "rollup -c rollup.config.mjs"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.0",
+    "@rollup/plugin-json": "^6.0.0",
+    "@rollup/plugin-node-resolve": "^15.0.0",
+    "rollup": "^3.0.0"
+  }
+
+}
