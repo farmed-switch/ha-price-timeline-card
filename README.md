@@ -85,7 +85,6 @@ resources:
 Here are the available parameters for this Lovelace card.
 
 ### 🔒 Required Parameters
-You **must provide exactly one** of the following parameters:  
 
 | Name       | Type   | Description |
 |------------|--------|-------------|
