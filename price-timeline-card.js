@@ -1,6 +1,6 @@
-import { LitElement, html, css } from "https://unpkg.com/lit-element/lit-element.js?module";
+import { LitElement, html, css, svg } from "https://unpkg.com/lit-element/lit-element.js?module";
 
-// Sprachdateien
+
 import en from "./localize/en.js";
 import de from "./localize/de.js";
 import es from "./localize/es.js";
@@ -8,167 +8,219 @@ import fr from "./localize/fr.js";
 
 const languages = { en, de, es, fr };
 
+
+ function localize(key, lang) {
+    return languages[lang]?.[key] || languages["en"][key] || key;
+  }
+
+
 class PriceTimelineCard extends LitElement {
   static get properties() {
     return {
       hass: {},
       config: {},
-      theme: { type: String }
+      theme: { type: String },
     };
   }
 
   static get styles() {
     return css`
-    :host {
-      --color-bg-light: #fff;
-      --color-text-light: #000;
-      --color-subtle-light: #666;
-      --color-dot-light: #656C72;
-      --color-orange-light: #FF832D;
-      --color-turquoise-light: #1DBFAC;
+      :host {
+        --color-bg-light: #fff;
+        --color-text-light: #000;
+        --color-subtle-light: #666;
+        --color-dot-light: #656c72;
+        --color-orange-light: #ff832d;
+        --color-turquoise-light: #1dbfac;
 
-      --color-bg-dark: #1e1e1e;
-      --color-text-dark: #f5f5f5;
-      --color-subtle-dark: #aaa;
-      --color-dot-dark: #999;
-      --color-orange-dark: #FF832D;
-      --color-turquoise-dark: #1DBFAC;
+        --color-bg-dark: #1e1e1e;
+        --color-text-dark: #f5f5f5;
+        --color-subtle-dark: #aaa;
+        --color-dot-dark: #999;
+        --color-orange-dark: #ff832d;
+        --color-turquoise-dark: #1dbfac;
 
-      --card-bg: var(--color-bg-light);
-      --card-text: var(--color-text-light);
-      --card-subtle: var(--color-subtle-light);
-      --card-dot: var(--color-dot-light);
-      --orange: var(--color-orange-light);
-      --turquoise: var(--color-turquoise-light);
-    }
-      
-    ha-card {
-      background: var(--card-bg);
-      padding: 16px;
-      font-family: sans-serif;
-      color: var(--card-text);
-    }
+        --card-bg: var(--color-bg-light);
+        --card-text: var(--color-text-light);
+        --card-subtle: var(--color-subtle-light);
+        --card-dot: var(--color-dot-light);
+        --orange: var(--color-orange-light);
+        --turquoise: var(--color-turquoise-light);
+      }
 
-    .header {
-      display:flex;
-      justify-content: space-between;
-      align-items: flex-start;
-    }
-    .header-left {
-      display:flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 0; 
-    }
-    .time {
-      font-size: 14px;
-      color: var(--card-subtle);
-      line-height: 1.1; 
-      margin: 0;
-    }
-    .price {
-      font-size: 24px;
-      font-weight: bold;
-      color: var(--card-text);
-      line-height: 1.1;
-      margin-top: 3px;
-      display: flex;
-      align-items: baseline; 
-    }
-    .price .value {
-      font-size: 20px;
-      font-weight: 800;
-    }
-    .price .unit {
-      font-size: 14px;  
-      font-weight: normal;
-      margin-left: 4px;  
-      color: var(--card-text);
-    }
-    .label {
-      font-size: 14px;
-      color: var(--card-subtle);
-    }
-    .slot.marker::after {
-      content:"";
-      position:absolute;
-      top:50%;
-      bottom:-8px;
-      margin: auto;
-      width:3px;
-      background:inherit;
-      border:2px solid var(--card-bg);
-      height: 12px;
-      transform: translate(-3px, -50%);
+      ha-card {
+        background: var(--card-bg);
+        padding: 16px;
+        font-family: sans-serif;
+        color: var(--card-text);
+        text-align: center;
+      }
+
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+
+      .header-left {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+      }
+
+      .time {
+        font-size: 14px;
+        color: var(--card-subtle);
+        line-height: 1.1;
+        margin: 0;
+      }
+
+      .price {
+        font-size: 24px;
+        font-weight: bold;
+        color: var(--card-text);
+        line-height: 1.1;
+        margin-top: 3px;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+      }
+
+      .price .value {
+        font-size: 28px;
+        font-weight: 800;
+      }
+
+      .price .unit {
+        font-size: 14px;
+        font-weight: normal;
+        margin-left: 6px;
+        color: var(--card-text);
+      }
+
+      .label {
+        font-size: 14px;
+        color: var(--card-subtle);
+      }
+
+      .timeline {
+        display: flex;
+        margin: 8px 0;
+        height: 6px;
+        border-radius: 5px;
+        overflow: visible;
+        position: relative;
+      }
+
+      .slot {
+        flex: 1;
+        opacity: 1;
+         position: relative;
+      }
+
+     .slot.marker::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: calc(var(--progress, 0) * 100%);
+      transform: translate(-50%, -50%); 
+      width: 3px;
+      height: 14px;
+      background: inherit;
+      border: 2px solid var(--card-bg);
       border-radius: 10px;
-      box-shadow: 0 0 4px rgba(0,0,0,0.3);
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
     }
-    .slot {
-      flex:1;
-      opacity:1;
-    }
-    .faded {
-      opacity:0.3;
-    }
-    .timeline {
-      display: flex;
-      margin: 8px 0;
-      height: 6px;
-      border-radius: 5px;
-      overflow: visible;
-      position: relative;
-    }
-    .scale {
-      display: grid;
-      grid-template-columns: repeat(25, 1fr);
-      font-size: 12px;
-      color: var(--card-subtle);
-      margin-top: 6px;
-      width: calc(100% + (100% / 24));  
-      margin-left: calc(-0.5 * (100% / 24)); 
-      margin-right: calc(-0.5 * (100% / 24)); 
-    }
-    .scale .tick {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .scale .dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--card-dot);
-      margin-bottom: 4px;
-    }
-    .scale .dot.faded {
-      opacity: 0.4;
-    }
-    .scale .hour {
-      font-variant-numeric: tabular-nums;
-      text-align: center;
-    }
+
+      .faded {
+        opacity: 0.3;
+      }
+
+      .scale {
+        display: grid;
+        grid-template-columns: repeat(25, 1fr);
+        font-size: 12px;
+        color: var(--card-subtle);
+        margin-top: 6px;
+        width: calc(100% + (100% / 24));
+        margin-left: calc(-0.5 * (100% / 24));
+        margin-right: calc(-0.5 * (100% / 24));
+      }
+
+      .scale .tick {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .scale .dot {
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background: var(--card-dot);
+        margin-bottom: 4px;
+      }
+
+      .scale .dot.faded {
+        opacity: 0.4;
+      }
+
+      .scale .hour {
+        font-variant-numeric: tabular-nums;
+        text-align: center;
+      }
+
+      /* Kreis-Ansicht */
+      .circle-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+      }
+
+      svg {
+        transform: rotate(-90deg);
+      }
+
+      .circle-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+      }
+
+      .circle-text .value {
+        font-size: 28px;
+        font-weight: bold;
+        color: var(--card-text);
+      }
+
+      .circle-text .unit {
+        font-size: 16px;
+        margin-left: 4px;
+        color: var(--card-text);
+      }
+
+      .circle-text .time {
+        font-size: 14px;
+        color: var(--card-subtle);
+        margin-top: 4px;
+      }
     `;
   }
 
   setConfig(config) {
-    if (!config.price) throw new Error(this.localize("missing_price"));
-    if (!config.average) throw new Error(this.localize("missing_average"));
+    if (!config.price) throw new Error(localize("missing_price", lang));
+    if (!config.average) throw new Error(localize("missing_average", lang));
     this.config = config;
     this.theme = config.theme || "light";
   }
 
-  localize(key) {
-    const lang = this.hass?.language || "en";
-    return languages[lang]?.[key] || languages["en"][key] || key;
-  }
-
-  constructor() {
-    super();
-  }
-
   render() {
     if (!this.hass) return html``;
-
+    const lang = this._hass?.language || "en";
     // Theme setzen
     switch (this.theme) {
       case "dark":
@@ -202,12 +254,12 @@ class PriceTimelineCard extends LitElement {
     const avgEntity = this.hass.states[this.config.average];
 
     if (!entity || !entity.attributes.data) {
-      return html`<ha-card><div>${this.localize("no_data")}</div></ha-card>`;
+      return html`<ha-card><div>${localize("no_data", lang)}</div></ha-card>`;
     }
 
     const allData = entity.attributes.data;
     const today = new Date();
-    const data = allData.filter(item => {
+    const data = allData.filter((item) => {
       const start = new Date(item.start_time);
       return (
         start.getFullYear() === today.getFullYear() &&
@@ -220,21 +272,76 @@ class PriceTimelineCard extends LitElement {
     const now = new Date();
     const currentHour = now.getHours();
     const currentPrice = data[currentHour].price_per_kwh;
-    const formattedPrice = (currentPrice * 100).toFixed(1).replace(".", ",");
+    const formattedPrice = (currentPrice * 100).toFixed(0);
+    const minutes = now.getMinutes();
+    const hourProgress = minutes / 60; // 0.0 bis 1.0
 
+
+    const minPrice = Math.min(...data.map((d) => d.price_per_kwh));
+    const maxPrice = Math.max(...data.map((d) => d.price_per_kwh));
+
+    // Anteil für Kreis berechnen (immer min 5%, max 95%)
+    const rawRatio = (currentPrice - minPrice) / (maxPrice - minPrice || 1);
+    const ratio = 0.05 + rawRatio * 0.9;
+
+    const radius = 65;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference * (1 - ratio);
+
+    const circleColor = currentPrice > avg ? "var(--orange)" : "var(--turquoise)";
+    const timeLabel = `${String(currentHour).padStart(2, "0")}:00-${String((currentHour + 1) % 24).padStart(2, "0")}:00`;
+
+    // Timeline oder Kreis?
+    if (this.config.timeline === false) {
+      return html`
+        <ha-card>
+          <div class="circle-container">
+            <svg width="150" height="150">
+              <circle
+                cx="75"
+                cy="75"
+                r="${radius}"
+                stroke="var(--card-dot)"
+                stroke-width="10"
+                fill="none"
+                opacity="0.2"
+              ></circle>
+              <circle
+                cx="75"
+                cy="75"
+                r="${radius}"
+                stroke="${circleColor}"
+                stroke-width="10"
+                fill="none"
+                stroke-dasharray="${circumference}"
+                stroke-dashoffset="${offset}"
+                stroke-linecap="round"
+              ></circle>
+            </svg>
+            <div class="circle-text">
+              <div class="price">
+                <span class="value">${formattedPrice}</span>
+                <span class="unit">${localize("unit_cent", lang)}</span>
+              </div>
+              <div class="time">${timeLabel}</div>
+            </div>
+          </div>
+        </ha-card>
+      `;
+    }
+
+    // Timeline Ansicht
     return html`
       <ha-card>
         <div class="header">
           <div class="header-left">
-            <div class="time">
-              ${String(currentHour).padStart(2,"0")}:00-${String((currentHour+1)%24).padStart(2,"0")}:00
-            </div>
+            <div class="time">${timeLabel}</div>
             <div class="price">
               <span class="value">${formattedPrice}</span>
-              <span class="unit">${this.localize("unit_cent")}</span>
+              <span class="unit">${localize("unit_cent", lang)}</span>
             </div>
           </div>
-          <div class="label">${this.localize("label_today_price")}</div>
+          <div class="label">${localize("label_today_price", lang)}</div>
         </div>
 
         <div class="timeline">
@@ -244,7 +351,8 @@ class PriceTimelineCard extends LitElement {
             const marker = i === currentHour ? "marker" : "";
 
             const prevColor = i > 0 ? (data[i - 1].price_per_kwh > avg ? "var(--orange)" : "var(--turquoise)") : null;
-            const nextColor = i < data.length - 1 ? (data[i + 1].price_per_kwh > avg ? "var(--orange)" : "var(--turquoise)") : null;
+            const nextColor =
+              i < data.length - 1 ? (data[i + 1].price_per_kwh > avg ? "var(--orange)" : "var(--turquoise)") : null;
 
             let borderRadius = "";
             if (prevColor !== color) {
@@ -255,18 +363,21 @@ class PriceTimelineCard extends LitElement {
             }
 
             return html`
-              <div class="slot ${faded} ${marker}" style="background:${color}; ${borderRadius}"></div>
-            `;
+  <div
+    class="slot ${faded} ${marker}"
+    style="background:${color}; ${borderRadius}; --progress:${hourProgress}"
+  ></div>
+`;
           })}
         </div>
 
         <div class="scale">
           ${Array.from({ length: 25 }).map((_, i) => {
-            const showHour = (i % 6 === 0 || i === 24);
+            const showHour = i % 6 === 0 || i === 24;
             return html`
               <div class="tick">
                 <div class="dot ${showHour ? "" : "faded"}"></div>
-                ${showHour ? html`<div class="hour">${String(i % 24).padStart(2,"0")}</div>` : ""}
+                ${showHour ? html`<div class="hour">${String(i % 24).padStart(2, "0")}</div>` : ""}
               </div>
             `;
           })}
@@ -274,6 +385,96 @@ class PriceTimelineCard extends LitElement {
       </ha-card>
     `;
   }
+    static getConfigElement() {
+    return document.createElement("price-timeline-card-editor");
+  }
+}
+customElements.define("price-timeline-card", PriceTimelineCard);
+
+// ---------------------
+// EDITOR 
+// ---------------------
+class PriceTimelineEditor extends LitElement {
+  static get properties() {
+    return {
+      _config: { type: Object },
+      hass: { type: Object },
+    };
+  }
+
+
+  setConfig(config) {
+    // Defaults behalten, damit Felder sichtbar sind
+    this._config = {
+      price: "",
+      average: "",
+      timeline: true,
+      theme: "light",
+      ...config,
+    };
+  }
+
+  set hass(hass) {
+    this._hass = hass;
+  }
+
+  _valueChanged(ev) {
+    if (!this._config || !this._hass) return;
+
+    const newConfig = { ...ev.detail.value };
+
+    this._config = newConfig;
+
+    this.dispatchEvent(
+      new CustomEvent("config-changed", {
+        detail: { config: this._config },
+        bubbles: true,
+        composed: true
+      })
+    );
+  }
+
+
+  render() {
+    if (!this._config) return html``;
+  const lang = this._hass?.language || "en";
+       const schema = [
+          {
+            name: "price",
+            selector: { text: {} },
+          },
+          {
+            name: "average",
+            selector: { text: {} },
+          },
+          {
+            name: "timeline",
+            selector: { boolean: {} },
+          },
+          {
+            name: "theme",
+            selector: {
+              select: {
+                options: [
+                  { value: "light", label: localize("editor_theme_light", lang) },
+                  { value: "dark", label: localize("editor_theme_dark", lang) },
+                  { value: "theme", label: localize("editor_theme_system", lang) },
+                ],
+              },
+            },
+          },
+        ];
+
+       return html`
+      <ha-form
+        .hass=${this._hass}
+        .data=${this._config}
+        .schema=${schema}
+        @value-changed=${this._valueChanged}
+      ></ha-form>
+    `;
+  }
 }
 
-customElements.define("price-timeline-card", PriceTimelineCard);
+
+customElements.define("price-timeline-card-editor", PriceTimelineEditor);
