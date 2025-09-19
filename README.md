@@ -32,6 +32,10 @@ Inside the circle, the current price (in Cent/kWh) and its time range are displa
   
 ![screenshot_dark_circle](./examples/dark_circle.png) 
 
+- with time slider
+
+![screenshot_dark_circle](./examples/light_circle_slider.png) 
+
 
 ---
 
@@ -96,6 +100,7 @@ Here are the available parameters for this Lovelace card.
 |------------|---------|---------|-------------|
 | `timeline` | boolean | `true`  | Show timeline view (`true`) or circle view (`false`). |
 | `theme`    | string  | `light` | Visual theme. Possible values: `light`, `dark`, `theme` (uses Home Assistant theme variables). |
+| `slider`    | boolean  | `false` | (ONLY for circle view) Show slider to change time for current day |
 
 ---
 
@@ -122,6 +127,16 @@ theme: dark
 timeline: false
 ```
 ![Visual Editor](./examples/dark_circle.png)
+
+circle view with slider:
+```yaml
+type: custom:price-timeline-card
+price: sensor.epex_price
+average: sensor.epex_average_price
+timeline: false
+slider: true
+```
+![Visual Editor](./examples/light_circle_slider.png)
 
 #### Configuration with Visual Editor
 

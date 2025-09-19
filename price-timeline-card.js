@@ -1,5 +1,4 @@
-import { LitElement, html, css, svg } from "https://unpkg.com/lit-element/lit-element.js?module";
-
+import { LitElement, html, css } from "https://unpkg.com/lit-element/lit-element.js?module";
 
 import en from "./localize/en.js";
 import de from "./localize/de.js";
@@ -8,11 +7,9 @@ import fr from "./localize/fr.js";
 
 const languages = { en, de, es, fr };
 
-
- function localize(key, lang) {
-    return languages[lang]?.[key] || languages["en"][key] || key;
-  }
-
+function localize(key, lang) {
+  return languages[lang]?.[key] || languages["en"][key] || key;
+}
 
 class PriceTimelineCard extends LitElement {
   static get properties() {
@@ -20,6 +17,7 @@ class PriceTimelineCard extends LitElement {
       hass: {},
       config: {},
       theme: { type: String },
+      selectedHour: { type: Number },
     };
   }
 
@@ -116,22 +114,22 @@ class PriceTimelineCard extends LitElement {
       .slot {
         flex: 1;
         opacity: 1;
-         position: relative;
+        position: relative;
       }
 
-     .slot.marker::after {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: calc(var(--progress, 0) * 100%);
-      transform: translate(-50%, -50%); 
-      width: 3px;
-      height: 14px;
-      background: inherit;
-      border: 2px solid var(--card-bg);
-      border-radius: 10px;
-      box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
-    }
+      .slot.marker::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: calc(var(--progress, 0) * 100%);
+        transform: translate(-50%, -50%);
+        width: 3px;
+        height: 14px;
+        background: inherit;
+        border: 2px solid var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+      }
 
       .faded {
         opacity: 0.3;
@@ -208,20 +206,33 @@ class PriceTimelineCard extends LitElement {
         color: var(--card-subtle);
         margin-top: 4px;
       }
+
+      .slider-container {
+        margin-top: 16px;
+      }
+
+      input[type="range"] {
+        width: 100%;
+      }
     `;
   }
 
   setConfig(config) {
-    if (!config.price) throw new Error(localize("missing_price", lang));
-    if (!config.average) throw new Error(localize("missing_average", lang));
+    if (!config.price) throw new Error(localize("missing_price", "en"));
+    if (!config.average) throw new Error(localize("missing_average", "en"));
     this.config = config;
     this.theme = config.theme || "light";
+  }
+
+  _onSliderChange(ev) {
+    this.selectedHour = parseInt(ev.target.value, 10);
   }
 
   render() {
     if (!this.hass) return html``;
     const lang = this._hass?.language || "en";
-    // Theme setzen
+
+    // Theme setzen (aus dem Ursprungscode)
     switch (this.theme) {
       case "dark":
         this.style.setProperty("--card-bg", "var(--color-bg-dark)");
@@ -271,16 +282,18 @@ class PriceTimelineCard extends LitElement {
     const avg = parseFloat(avgEntity.state);
     const now = new Date();
     const currentHour = now.getHours();
-    const currentPrice = data[currentHour].price_per_kwh;
-    const formattedPrice = (currentPrice * 100).toFixed(0);
     const minutes = now.getMinutes();
-    const hourProgress = minutes / 60; // 0.0 bis 1.0
+    const hourProgress = minutes / 60;
 
+    // aktuelle oder ausgewählte Stunde
+    const hourToShow = this.config.slider ? (this.selectedHour ?? currentHour) : currentHour;
+
+    const currentPrice = data[hourToShow].price_per_kwh;
+    const formattedPrice = (currentPrice * 100).toFixed(0);
 
     const minPrice = Math.min(...data.map((d) => d.price_per_kwh));
     const maxPrice = Math.max(...data.map((d) => d.price_per_kwh));
 
-    // Anteil für Kreis berechnen (immer min 5%, max 95%)
     const rawRatio = (currentPrice - minPrice) / (maxPrice - minPrice || 1);
     const ratio = 0.05 + rawRatio * 0.9;
 
@@ -289,9 +302,9 @@ class PriceTimelineCard extends LitElement {
     const offset = circumference * (1 - ratio);
 
     const circleColor = currentPrice > avg ? "var(--orange)" : "var(--turquoise)";
-    const timeLabel = `${String(currentHour).padStart(2, "0")}:00-${String((currentHour + 1) % 24).padStart(2, "0")}:00`;
+    const timeLabel = `${String(hourToShow).padStart(2, "0")}:00-${String((hourToShow + 1) % 24).padStart(2, "0")}:00`;
 
-    // Timeline oder Kreis?
+    // Circle-Ansicht
     if (this.config.timeline === false) {
       return html`
         <ha-card>
@@ -326,6 +339,20 @@ class PriceTimelineCard extends LitElement {
               <div class="time">${timeLabel}</div>
             </div>
           </div>
+
+          ${this.config.slider
+            ? html`
+                <div class="slider-container">
+                  <input
+                    type="range"
+                    min="0"
+                    max="23"
+                    .value="${hourToShow}"
+                    @input="${this._onSliderChange}"
+                  />
+                </div>
+              `
+            : ""}
         </ha-card>
       `;
     }
@@ -363,11 +390,11 @@ class PriceTimelineCard extends LitElement {
             }
 
             return html`
-  <div
-    class="slot ${faded} ${marker}"
-    style="background:${color}; ${borderRadius}; --progress:${hourProgress}"
-  ></div>
-`;
+              <div
+                class="slot ${faded} ${marker}"
+                style="background:${color}; ${borderRadius}; --progress:${hourProgress}"
+              ></div>
+            `;
           })}
         </div>
 
@@ -385,14 +412,15 @@ class PriceTimelineCard extends LitElement {
       </ha-card>
     `;
   }
-    static getConfigElement() {
+
+  static getConfigElement() {
     return document.createElement("price-timeline-card-editor");
   }
 }
 customElements.define("price-timeline-card", PriceTimelineCard);
 
 // ---------------------
-// EDITOR 
+// EDITOR
 // ---------------------
 class PriceTimelineEditor extends LitElement {
   static get properties() {
@@ -402,14 +430,13 @@ class PriceTimelineEditor extends LitElement {
     };
   }
 
-
   setConfig(config) {
-    // Defaults behalten, damit Felder sichtbar sind
     this._config = {
       price: "",
       average: "",
       timeline: true,
       theme: "light",
+      slider: false,
       ...config,
     };
   }
@@ -429,43 +456,34 @@ class PriceTimelineEditor extends LitElement {
       new CustomEvent("config-changed", {
         detail: { config: this._config },
         bubbles: true,
-        composed: true
+        composed: true,
       })
     );
   }
 
-
   render() {
     if (!this._config) return html``;
-  const lang = this._hass?.language || "en";
-       const schema = [
-          {
-            name: "price",
-            selector: { text: {} },
+    const lang = this._hass?.language || "en";
+    const schema = [
+      { name: "price", selector: { text: {} } },
+      { name: "average", selector: { text: {} } },
+      { name: "timeline", selector: { boolean: {} } },
+      { name: "slider", selector: { boolean: {} } },
+      {
+        name: "theme",
+        selector: {
+          select: {
+            options: [
+              { value: "light", label: localize("editor_theme_light", lang) },
+              { value: "dark", label: localize("editor_theme_dark", lang) },
+              { value: "theme", label: localize("editor_theme_system", lang) },
+            ],
           },
-          {
-            name: "average",
-            selector: { text: {} },
-          },
-          {
-            name: "timeline",
-            selector: { boolean: {} },
-          },
-          {
-            name: "theme",
-            selector: {
-              select: {
-                options: [
-                  { value: "light", label: localize("editor_theme_light", lang) },
-                  { value: "dark", label: localize("editor_theme_dark", lang) },
-                  { value: "theme", label: localize("editor_theme_system", lang) },
-                ],
-              },
-            },
-          },
-        ];
+        },
+      },
+    ];
 
-       return html`
+    return html`
       <ha-form
         .hass=${this._hass}
         .data=${this._config}
@@ -475,6 +493,4 @@ class PriceTimelineEditor extends LitElement {
     `;
   }
 }
-
-
 customElements.define("price-timeline-card-editor", PriceTimelineEditor);
