@@ -8,7 +8,7 @@ Supports multiple languages and two different modes and dark&light theme or defa
 
 ### Timeline mode:
 By default, the card shows a **timeline view** of today's electricity prices.  
-Each bar represents one hour of the day, colored **turquoise** if the price is below the daily average and **orange** if above. Faded  
+Each bar represents one hour of the day, colored **turquoise** if the price is below the daily average and **orange** if above.
 The current hour is highlighted with a marker, while **past hours** are shown faded to provide a quick visual distinction between past and upcoming prices.
 A scale below the timeline shows the hours of the day.
 - light
