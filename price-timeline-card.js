@@ -232,7 +232,7 @@ class PriceTimelineCard extends LitElement {
     if (!this.hass) return html``;
     const lang = this._hass?.language || "en";
 
-    // Theme setzen (aus dem Ursprungscode)
+    // Theme setzen
     switch (this.theme) {
       case "dark":
         this.style.setProperty("--card-bg", "var(--color-bg-dark)");
