@@ -212,8 +212,34 @@ class PriceTimelineCard extends LitElement {
       }
 
       input[type="range"] {
-        width: 100%;
-      }
+  -webkit-appearance: none; /* Standarddarstellung weg */
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 5px;
+  background: var(--primary-color); /* Home Assistant Theme Farbe */
+  outline: none;
+  opacity: 0.9;
+  transition: background 0.3s;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--slider-color, var(--accent-color)); /* Theme-Farbe */
+  cursor: pointer;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--slider-color, var(--accent-color));
+  cursor: pointer;
+}
     `;
   }
 
