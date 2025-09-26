@@ -520,3 +520,10 @@ class PriceTimelineEditor extends LitElement {
   }
 }
 customElements.define("price-timeline-card-editor", PriceTimelineEditor);
+window.customCards = window.customCards || [];
+window.customCards.push({
+   type: "price-timeline-card",
+   name: "HA Price Timeline Card",
+   preview: false,
+   description: "Card that visualizes hourly energy prices on a timeline or circle",
+});
