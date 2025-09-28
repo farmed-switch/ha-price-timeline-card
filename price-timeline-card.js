@@ -12,14 +12,26 @@ function localize(key, lang) {
 }
 
 class PriceTimelineCard extends LitElement {
+    
   static get properties() {
     return {
-      hass: {},
       config: {},
       theme: { type: String },
       selectedHour: { type: Number },
     };
   }
+  
+  set hass(hass) {
+    this._hass = hass;
+
+      this._lang =
+        hass?.locale?.language ||
+        hass?.language ||
+        "en";
+    
+      this.requestUpdate(); 
+    }
+  
 
   static get styles() {
     return css`
@@ -255,8 +267,8 @@ input[type="range"]::-moz-range-thumb {
   }
 
   render() {
-    if (!this.hass) return html``;
-    const lang = this._hass?.language || "en";
+    if (!this._hass) return html``;
+    const lang = this._lang;
 
     // Theme setzen
     switch (this.theme) {
@@ -287,8 +299,8 @@ input[type="range"]::-moz-range-thumb {
         this.style.setProperty("--turquoise", "var(--color-turquoise-light)");
     }
 
-    const entity = this.hass.states[this.config.price];
-    const avgEntity = this.hass.states[this.config.average];
+    const entity = this._hass.states[this.config.price];
+    const avgEntity = this._hass.states[this.config.average];
 
     if (!entity || !entity.attributes.data) {
       return html`<ha-card><div>${localize("no_data", lang)}</div></ha-card>`;
