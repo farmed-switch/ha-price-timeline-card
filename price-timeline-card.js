@@ -282,12 +282,12 @@ input[type="range"]::-moz-range-thumb {
         break;
 
       case "theme":
-        this.style.setProperty("--card-bg", "var(--ha-card-background, var(--color-bg-light))");
-        this.style.setProperty("--card-text", "var(--primary-text-color, var(--color-text-light))");
-        this.style.setProperty("--card-subtle", "var(--secondary-text-color, var(--card-subtle-light))");
-        this.style.setProperty("--card-dot", "var(--divider-color, var(--card-dot-light))");
-        this.style.setProperty("--orange", "var(--color-orange-light)");
-        this.style.setProperty("--turquoise", "var(--color-turquoise-light)");
+        this.style.setProperty("--card-bg", "var(--ha-card-background, var(--card-background-color))");
+        this.style.setProperty("--card-text", "var(--primary-text-color)");
+        this.style.setProperty("--card-subtle", "var(--secondary-text-color)");
+        this.style.setProperty("--card-dot", "var(--divider-color)");
+        this.style.setProperty("--orange", "var(--accent-color)");
+        this.style.setProperty("--turquoise", "var(--state-icon-color)");
         break;
 
       default: // light
