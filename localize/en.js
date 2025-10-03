@@ -3,7 +3,7 @@ export default {
   missing_price: "Please specify 'price' sensor in the config",
   missing_average: "Please specify 'average' sensor in the config",
   label_today_price: "Today's price",
-  unit_cent: "Cent",
+  unit_cent: "Ore",
   label_tomorrow_price: "Tomorrow's price",
   editor_theme_light: "Light",
   editor_theme_dark: "Dark",
