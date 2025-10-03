@@ -1,3 +1,8 @@
+OBS OBS!!!!
+Im only clone repo to be able to change from Cent to Ore
+OBS OBS!!!!
+
+
 [![hacs][hacs-default]][hacs-default-link] [![hacs][hacs-validate]][hacs-validate-link]
 
 # HA Price Timeline Card
